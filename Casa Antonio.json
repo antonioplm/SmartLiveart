@@ -1,0 +1,122 @@
+[
+    {
+        "Name": "Casale diroccato",
+        "Description": "Casale diroccato",
+        "Coordinates": {
+            "Latitude": 41.844769,
+            "Longitude": 12.421715,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 30
+    },
+    {
+        "Name": "Centro parcheggio 1 Ressi",
+        "Description": "Centro parcheggio 1 Ressi",
+        "Coordinates": {
+            "Latitude": 41.846279,
+            "Longitude": 12.422160,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "Inizio parcheggio 2 Ressi",
+        "Description": "Inizio parcheggio 2 Ressi",
+        "Coordinates": {
+            "Latitude": 41.8470053,
+            "Longitude": 12.425601,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "Edicola",
+        "Description": "Edicola",
+        "Coordinates": {
+            "Latitude": 41.847175,
+            "Longitude": 12.421581,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "San Marcello Pistoiese 1",
+        "Description": "San Marcello Pistoiese 1",
+        "Coordinates": {
+            "Latitude": 41.847524,
+            "Longitude": 12.424247,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "San Marcello Pistoiese 2",
+        "Description": "San Marcello Pistoiese 2",
+        "Coordinates": {
+            "Latitude": 41.847645,
+            "Longitude": 12.424353,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "San Marcello Pistoiese 3",
+        "Description": "San Marcello Pistoiese 3",
+        "Coordinates": {
+            "Latitude": 41.847947,
+            "Longitude": 12.423735,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "San Marcello Pistoiese 4",
+        "Description": "San Marcello Pistoiese 4",
+        "Coordinates": {
+            "Latitude": 41.847590,
+            "Longitude": 12.423392,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "Incrocio Magliani-Ressi 1",
+        "Description": "Incrocio Magliani-Ressi 1",
+        "Coordinates": {
+            "Latitude": 41.845508,
+            "Longitude": 12.425426,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "Incrocio Magliani-Ressi 2",
+        "Description": "Incrocio Magliani-Ressi 2",
+        "Coordinates": {
+            "Latitude": 41.846403,
+            "Longitude": 12.425873,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "Incrocio Nazzani-Magliani",
+        "Description": "Incrocio Nazzani-Magliani",
+        "Coordinates": {
+            "Latitude": 41.848044,
+            "Longitude": 12.422306,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    },
+    {
+        "Name": "Ingresso scuola elementare",
+        "Description": "Ingresso scuola elementare",
+        "Coordinates": {
+            "Latitude": 41.845768,
+            "Longitude": 12.422976,
+            "Altitude": 0
+        },
+        "AltitudeOffset": 0
+    }
+]
