@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: slkb_osm_cleaner
+Version: 1.0.0
+Summary: Normalizzatore di nomi POI OSM per SLKB
+Author: SLKB
+Dynamic: author
+Dynamic: summary

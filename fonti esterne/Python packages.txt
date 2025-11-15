@@ -1,0 +1,6 @@
+pip install SPARQLWrapper
+pip install python-docx
+pip install requests
+pip install shapely
+pip install pandas
+pip install wikipedia-api

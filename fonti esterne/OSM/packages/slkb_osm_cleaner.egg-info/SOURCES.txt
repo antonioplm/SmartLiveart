@@ -1,0 +1,8 @@
+setup.py
+slkb_osm_cleaner/__init__.py
+slkb_osm_cleaner/cleaner.py
+slkb_osm_cleaner/mappings.py
+slkb_osm_cleaner.egg-info/PKG-INFO
+slkb_osm_cleaner.egg-info/SOURCES.txt
+slkb_osm_cleaner.egg-info/dependency_links.txt
+slkb_osm_cleaner.egg-info/top_level.txt
