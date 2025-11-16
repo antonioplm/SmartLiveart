@@ -1,0 +1,8 @@
+SPARQLWrapper
+python-docx
+requests
+shapely
+pandas
+wikipedia-api
+spacy
+tqdm
