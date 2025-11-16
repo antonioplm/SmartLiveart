@@ -1,0 +1,35 @@
+# Python bytecode e cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.env.*
+
+# Files di log
+*.log
+
+# File di configurazione IDE / editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# File di sistema OS
+.DS_Store
+Thumbs.db
+
+# Cartelle e file esterni
+fonti esterne/**/*.json
+fonti esterne/**/*.docx
+
+# Cartelle build / output
+build/
+dist/
+*.egg-info/
+
+# Archivio temporaneo
+*.tmp
+*.bak

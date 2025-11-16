@@ -37,7 +37,7 @@ def merge_nearby_poi(pois, max_distance_m=50):
     per ridurre duplicati visivi come fermate bus adiacenti.
     """
     merged = []
-    skipped = 0
+    fusi = []  # lista per tenere traccia dei POI fusi
 
     for poi in pois:
         found = False
@@ -47,12 +47,16 @@ def merge_nearby_poi(pois, max_distance_m=50):
                 and haversine(poi["latitudine"], poi["longitudine"], m["latitudine"], m["longitudine"]) < max_distance_m
             ):
                 found = True
-                skipped += 1
+                fusi.append((poi, m))  # salva la coppia: POI attuale e quello già presente
                 break
         if not found:
             merged.append(poi)
 
-    print(f"Fusi {skipped} POI ravvicinati (distanza < {max_distance_m} m)")
+    # stampa dettagliata dei POI fusi
+    for poi, m in fusi:
+        print(f"Fuso POI '{poi['nome_poi']}' ({poi['latitudine']},{poi['longitudine']}) "
+              f"in '{m['nome_poi']}' ({m['latitudine']},{m['longitudine']})")
+
     print(f"Totale POI finali: {len(merged)}")
     return merged
 

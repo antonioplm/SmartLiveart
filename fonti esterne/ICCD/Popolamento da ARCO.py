@@ -3,19 +3,19 @@ import json
 import argparse
 from SPARQLWrapper import SPARQLWrapper, JSON
 from docx import Document
+from collections import Counter
+from collections import defaultdict
+from tqdm import tqdm
+from Utils import ENDPOINT, generate_tags, get_city_from_args, Spinner
 
-endpoint_url = "https://dati.cultura.gov.it/sparql"
+city_lowered, city_capitalized = get_city_from_args()
 
-# --- Leggi parametro città da linea di comando ---
-parser = argparse.ArgumentParser()
-parser.add_argument("--city", type=str, required=True, help="Nome della città da filtrare")
-args = parser.parse_args()
-city_name = args.city.lower()  # mettiamo in minuscolo per il filtro
 
 # Query principale per ottenere POI e URI di dating
 # Attualmente la query è esplicitamente limitata al grafo GRAPH <https://w3id.org/arco/data> { ... }
 # Questo significa che il motore SPARQL cerca solo nel dataset “ArCo”, cioè quello dell’Istituto Centrale per il Catalogo e la Documentazione (ICCD) — https://w3id.org/arco
 sparql_query = f"""
+PREFIX cd: <https://w3id.org/arco/ontology/construction-description/>
 SELECT 
   ?s AS ?s_norm
   (SAMPLE(STR(?l)) AS ?label)
@@ -25,6 +25,10 @@ SELECT
   (SAMPLE(COALESCE(?LongGeom, ?Long)) AS ?Longitudine)
   (SAMPLE(?Descrizione) AS ?Descrizione)
   (GROUP_CONCAT(DISTINCT STR(?Dating); separator=" | ") AS ?DatingURIs)
+  (GROUP_CONCAT(DISTINCT STR(?constructionElement); separator=" | ") AS ?ConstructionElementURIs)
+  (GROUP_CONCAT(DISTINCT STR(?covering); separator=" | ") AS ?CoveringURIs)
+  (GROUP_CONCAT(DISTINCT STR(?design); separator=" | ") AS ?DesignURIs)
+  (GROUP_CONCAT(DISTINCT STR(?layout); separator=" | ") AS ?LayoutURIs)
 WHERE {{
   GRAPH <https://w3id.org/arco/data> {{
     ?s a arco:ImmovableCulturalProperty ;
@@ -33,7 +37,7 @@ WHERE {{
     ?address clvapit:hasCity ?city .
     ?city rdfs:label ?cityLabel .
 
-    FILTER(LCASE(STR(?cityLabel)) = "{city_name}")
+    FILTER(LCASE(STR(?cityLabel)) = "{city_lowered}")
 
     OPTIONAL {{ ?address clvapit:fullAddress ?Indirizzo }}
     OPTIONAL {{ ?address geo:lat ?Lat }}
@@ -47,6 +51,12 @@ WHERE {{
     OPTIONAL {{ ?s dc:description ?Descrizione }}
     OPTIONAL {{ ?s dc:type ?Categoria }}
     OPTIONAL {{ ?s a-cd:hasDating ?Dating }}
+
+    # Architettura / Arte / Forma: manteniamo solo gli URI
+    OPTIONAL {{ ?s cd:hasConstructionElement ?constructionElement }}
+    OPTIONAL {{ ?s cd:hasCovering ?covering }}
+    OPTIONAL {{ ?s cd:hasDesign ?design }}
+    OPTIONAL {{ ?s cd:hasLayout ?layout }}
 
     BIND(REPLACE(STR(?s), ".*/", "") AS ?rawId)
     BIND(REPLACE(?rawId, "[^0-9]+$", "") AS ?idBase)
@@ -145,55 +155,7 @@ categoria_map = {
     "spazio pubblico": "Spazio pubblico contemporaneo",
 }
 
-# Vocabolario tag K3
-k3_vocab = {
-    "preistorico": "TE:periodo", "protostorico": "TE:periodo", "antico": "TE:periodo",
-    "medievale": "TE:periodo", "rinascimentale": "TE:periodo", "barocco": "TE:periodo",
-    "neoclassico": "TE:periodo", "moderno": "TE:periodo", "contemporaneo": "TE:periodo",
-    "romanico": "TE:stile", "gotico": "TE:stile", "barocco": "TE:stile", "neoclassico": "TE:stile",
-    "pietra": "TE:materiale", "marmo": "TE:materiale", "legno": "TE:materiale", "bronzo": "TE:materiale",
-    "affresco": "TE:tecnica", "mosaico": "TE:tecnica",
-    "religione": "TE:tema", "memoria": "TE:tema", "tradizione": "TE:tema", "storia": "TE:tema",
-    "comunità": "TE:tema", "territorio": "TE:tema", "paesaggio": "TE:tema", "artigianato": "TE:tema",
-    "musica": "TE:tema", "enogastronomia": "TE:tema"
-}
-
-# Lista di parole comuni da ignorare nei tag liberi
-stopwords = set([
-    "della","delle","del","dell","dei","da","di","e","il","la","le","lo","un","una","in","sul","sul","con","per","al","ai","dal","dai","sul","sulla","sant", "santa", "san"
-])
-
-def clean_poi_name(nome_poi: str) -> str:
-    """Rimuove la parte dopo il trattino nel Nome POI."""
-    if '-' in nome_poi:
-        nome_poi = nome_poi.split('-')[0].strip()
-    return nome_poi
-
-def generate_tags(nome_poi: str, descrizione: str, storia: str, max_k3=5, max_free=3):
-    nome_poi = clean_poi_name(nome_poi)
-    testo = f"{nome_poi} {descrizione} {storia}".lower()
-
-    # --- Tag dal vocabolario K3 ---
-    k3_tags = []
-    for keyword in k3_vocab:
-        if re.search(rf'\b{re.escape(keyword)}\b', testo) and keyword not in k3_tags:
-            k3_tags.append(keyword)
-        if len(k3_tags) >= max_k3:
-            break
-
-    # --- Tag liberi significativi ---
-    words = re.findall(r'\b[a-zA-Z]{4,}\b', testo)  # parole di almeno 4 lettere
-    free_tags = []
-    for w in words:
-        if w not in k3_tags and w not in free_tags and w not in stopwords:
-            free_tags.append(w)
-        if len(free_tags) >= max_free:
-            break
-
-    return k3_tags + free_tags
-
 def run_sparql_query(endpoint, query):
-    print(f"query: {query}")
     sparql = SPARQLWrapper(endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -226,7 +188,7 @@ def fetch_dating_details(dating_uri):
     }}
     """
 
-    sparql = SPARQLWrapper(endpoint_url)
+    sparql = SPARQLWrapper(ENDPOINT)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
 
@@ -270,18 +232,145 @@ def fetch_dating_details(dating_uri):
         print(f"Errore fetch_dating_details per {dating_uri}: {e}")
         return []
 
-def create_docx(data, city_name, filename=None):
+def fetch_construction_details(uri):
+    """
+    Recupera informazioni dettagliate da un URI Architettura/Arte/Forma.
+    Costruisce testo leggibile dai campi principali: rdf:type, core:hasType, arco-dd:hasMaterial, arco-dd:hasShape (opzionali)
+    """
+    query = f"""
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX arco-core: <https://w3id.org/arco/ontology/core/>
+    PREFIX arco-dd: <https://w3id.org/arco/ontology/denotative-description/>
+    PREFIX l0: <https://w3id.org/italia/onto/l0/>
 
+    SELECT (CONCAT(
+               STR(?elementTypeLabel),
+               IF(BOUND(?typeLabelFinal), CONCAT(" ", STR(?typeLabelFinal)), ""),
+               IF(BOUND(?materialLabelFinal), CONCAT(" ", STR(?materialLabelFinal)), ""),
+               IF(BOUND(?shapeLabelFinal), CONCAT(" ", STR(?shapeLabelFinal)), "")
+           ) AS ?fullLabel)
+    WHERE {{
+      <{uri}> rdf:type ?elementType .
+
+      # label tipo principale
+      OPTIONAL {{
+        ?elementType rdfs:label ?elementTypeLabel .
+        FILTER(lang(?elementTypeLabel)="it")
+      }}
+      OPTIONAL {{
+        ?elementType l0:name ?elementTypeName .
+      }}
+      BIND(COALESCE(?elementTypeLabel, ?elementTypeName) AS ?elementTypeLabel)
+
+      # tipo tecnico
+      OPTIONAL {{ 
+        <{uri}> arco-core:hasType ?type .
+        OPTIONAL {{ ?type rdfs:label ?typeLabel FILTER(lang(?typeLabel)="it") }}
+        OPTIONAL {{ ?type l0:name ?typeLabelName }}
+        BIND(COALESCE(?typeLabel, ?typeLabelName) AS ?typeLabelFinal)
+      }}
+
+      # materiale
+      OPTIONAL {{ 
+        <{uri}> arco-dd:hasMaterial ?material .
+        OPTIONAL {{ ?material rdfs:label ?materialLabel FILTER(lang(?materialLabel)="it") }}
+        OPTIONAL {{ ?material l0:name ?materialLabelName }}
+        BIND(COALESCE(?materialLabel, ?materialLabelName) AS ?materialLabelFinal)
+      }}
+
+      # forma
+      OPTIONAL {{
+        <{uri}> arco-dd:hasShape ?shape .
+        OPTIONAL {{ ?shape rdfs:label ?shapeLabel FILTER(lang(?shapeLabel)="it") }}
+        OPTIONAL {{ ?shape l0:name ?shapeLabelName }}
+        BIND(COALESCE(?shapeLabel, ?shapeLabelName) AS ?shapeLabelFinal)
+      }}
+    }}
+    LIMIT 1
+    """
+
+    sparql = SPARQLWrapper(ENDPOINT)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+
+    try:
+        res = sparql.query().convert()
+        bindings = res.get("results", {}).get("bindings", [])
+        result_text = []
+
+        for b in bindings:
+            if "fullLabel" in b:
+                result_text.append(b["fullLabel"]["value"])
+
+        return result_text
+
+    except Exception as e:
+        print(f"Errore fetch_construction_details per {uri}: {e}")
+        return []
+
+def categorize_architecture_elements(elements):
+    """
+    Pulisce e raggruppa elementi di Architettura/Arte/Forma in categorie principali,
+    restituendo testo pronto da inserire in un documento.
+    """
+    categories = defaultdict(list)
+
+    for elem in elements:
+        # 1. Rimuove simboli come '(?)'
+        elem_clean = re.sub(r'\(\?\)', '', elem)
+        # 2. Rimuove spazi multipli e strip
+        elem_clean = re.sub(r'\s+', ' ', elem_clean).strip()
+        
+        # 3. Determina la categoria in base alla prima parola
+        if elem_clean.lower().startswith("elemento orizzontale"):
+            cat = "Elemento orizzontale"
+            value = elem_clean[len("Elemento orizzontale "):].strip()
+        elif elem_clean.lower().startswith("elemento verticale"):
+            cat = "Elemento verticale"
+            value = elem_clean[len("Elemento verticale "):].strip()
+        elif elem_clean.lower().startswith("copertura"):
+            cat = "Copertura"
+            value = elem_clean[len("Copertura "):].strip()
+        elif elem_clean.lower().startswith("pavimentazione"):
+            cat = "Pavimentazione"
+            value = elem_clean[len("Pavimentazione "):].strip()
+        else:
+            cat = "Altro"
+            value = elem_clean
+        
+        # 4. Normalizza in minuscolo
+        value = value.lower()
+        categories[cat].append(value)
+    
+    # 5. Costruisce il testo finale con indentazione e elenco puntato
+    output_lines = []
+    for cat in ["Elemento orizzontale", "Elemento verticale", "Copertura", "Pavimentazione", "Altro"]:
+        if cat in categories:
+            output_lines.append(f"{cat}:")
+            for v in categories[cat]:
+                output_lines.append(f"  - {v}")
+    
+    return "\n".join(output_lines)
+
+def clean_poi_name(nome_poi: str) -> str:
+    """Rimuove la parte dopo il trattino nel Nome POI."""
+    if '-' in nome_poi:
+        nome_poi = nome_poi.split('-')[0].strip()     
+    return nome_poi
+
+
+def create_docx(data, filename=None):
     if filename is None:
-        # costruisci il nome del file includendo la città
-        safe_city = city_name.replace(" ", "_")  # sostituisci spazi con underscore
-        filename = f"Dati_ICCD_{safe_city}.docx"
+        safe_city = city_capitalized.replace(" ", "_")
+        filename = f"Dati_ARCO_{safe_city}.docx"
         
     doc = Document()
-    doc.add_heading("Dati da ICCD", level=0)
+    doc.add_heading(f"Dati da ARCO – {city_capitalized}", level=0)
 
-    for poi in data:
-        doc.add_heading(poi.get("label", {}).get("value", "POI sconosciuto"), level=1)
+    for poi in tqdm(data, desc="Elaborazione POI", unit="POI"):
+#    for poi in data:
+        doc.add_heading(clean_poi_name(poi.get("label", {}).get("value", "POI sconosciuto")), level=1)
         
         table = doc.add_table(rows=1, cols=2)
         table.style = 'Table Grid'
@@ -297,60 +386,93 @@ def create_docx(data, city_name, filename=None):
         # Nome POI
         row = table.add_row().cells
         row[0].text = "Nome POI"
-        row[1].text = poi.get("label", {}).get("value", "")
-        
+        row[1].text = clean_poi_name(poi.get("label", {}).get("value", ""))
+
         # Categoria Persistente
         row = table.add_row().cells
         row[0].text = "Categoria Persistente"
         arco_categoria = poi.get("Categoria", {}).get("value", "")
-        categoria_iccd = map_categoria(arco_categoria)
-        row[1].text = categoria_iccd
-
-        # --- RIGA TAG ---
-        row = table.add_row().cells
-        row[0].text = "Tag"
+        categoria_persistente = map_categoria(arco_categoria)
+        row[1].text = categoria_persistente        
 
         # Storia e cronologia
         row = table.add_row().cells
         row[0].text = "Storia e cronologia"
-        
         storia_text = ""
-        descr_seen = set()  # per evitare duplicati di descr
-
+        descr_seen = set()
         dating_uris = poi.get("DatingURIs", {}).get("value", "").split(" | ")
-
-        for uri in dating_uris:  # scorri tutti gli URI
+        for uri in dating_uris:
             uri = uri.strip()
             if not uri:
                 continue
-
             triples = fetch_dating_details(uri)
             for label, time, descr in triples:
-                # aggiungi solo se almeno uno dei campi non è vuoto
-                if any([label, time, descr]):
-                    # se la descr è già stata aggiunta, salta
-                    if descr in descr_seen:
-                        continue
+                if any([label, time, descr]) and descr not in descr_seen:
                     descr_seen.add(descr)
-
-                    # formattazione desiderata
                     storia_text += f"{label}, {time}\n{descr}\n\n"
-
         row[1].text = storia_text.strip()
+
 
         # Architettura / Arte / Forma
         row = table.add_row().cells
         row[0].text = "Architettura / Arte / Forma"
-        row[1].text = poi.get("Descrizione", {}).get("value", "")
 
-        # genera o recupera i tag del POI
-        nome_poi = poi.get("label", {}).get("value", "")
+        arch_texts = []
+
+        # unisci tutti i campi URI
+        for key in ["ConstructionElementURIs", "CoveringURIs", "DesignURIs", "LayoutURIs"]:
+            val = poi.get(key, {}).get("value")
+            if not val:
+                continue
+            if isinstance(val, str):
+                arch_texts += [u.strip() for u in val.split(" | ") if u.strip()]
+            elif isinstance(val, list):
+                arch_texts += [u.strip() for u in val if u.strip()]
+
+        # recupera i dettagli da ogni URI
+        arch_details = []
+        for uri in arch_texts:
+            result = fetch_construction_details(uri)
+            if not result:
+                print(f"Attenzione: nessun dato trovato per {uri}")
+            else:
+                arch_details.extend(result)
+
+        # inserisci nel documento
+        architettura_text = categorize_architecture_elements(arch_details) if arch_details else "-"
+        row[1].text = architettura_text
+        
+        # --- RIGA TAG ---
+        row = table.add_row().cells
+        row[0].text = "Tag"
+
+        # integra architettura_text nella generazione dei tag
+        arch_text_for_tags = ""
+        if architettura_text and architettura_text != "-":
+            # rimuovi le intestazioni generiche
+            arch_text_cleaned = re.sub(
+                r"^(?:\s*-?\s*)?(Elemento orizzontale|Elemento verticale|Copertura|Pavimentazione|Altro):\s*", 
+                "", 
+                architettura_text, 
+                flags=re.MULTILINE
+            )
+            # sostituisci punteggiatura e newline con spazi
+            arch_text_cleaned = re.sub(r"[:\n\-]", " ", arch_text_cleaned)
+            arch_text_cleaned = re.sub(r"\s+", " ", arch_text_cleaned).strip()
+            arch_text_for_tags = arch_text_cleaned
+
+        nome_poi = clean_poi_name(poi.get("label", {}).get("value", ""))
         descrizione = poi.get("Descrizione", {}).get("value", "")
-        tags_list = generate_tags(nome_poi, descrizione, storia_text.strip())
-
-        # unisci i tag in una stringa separata da virgola
-        row[1].text = ", ".join(tags_list)
-        print(f"tag: {row[1].text}")
+        # genera tag escludendo la categoria persistente
+        #tags_list = generate_tags(nome_poi, descrizione, storia_text.strip(), arch_text_for_tags, exclude_tags=[categoria_persistente])
+        tags_list = generate_tags("", descrizione, storia_text.strip(), arch_text_for_tags, exclude_tags=[categoria_persistente])
+        row[1].text = ", ".join(tags_list)        
+        # print(f"tags: {row[1].text}")
+        
+        # Indirizzo
+        row = table.add_row().cells
+        row[0].text = "Indirizzo"
+        row[1].text = poi.get("Indirizzo", {}).get("value", "")
 
         # Latitudine / Longitudine
         row = table.add_row().cells
@@ -360,8 +482,13 @@ def create_docx(data, city_name, filename=None):
         row[0].text = "Longitudine"
         row[1].text = poi.get("Longitudine", {}).get("value", "")
 
-    doc.save(filename)
-    print(f"DOCX generato: {filename}")
+    try:
+        doc.save(filename)
+        print(f"File salvato correttamente: {filename}")
+    except PermissionError:
+        print(f"Errore: impossibile salvare '{filename}'. Probabilmente il file è aperto in un'altra applicazione.")
+    except Exception as e:
+        print(f"Errore imprevisto durante il salvataggio: {e}")
 
 
 def map_categoria(arco_categoria):
@@ -373,7 +500,7 @@ def map_categoria(arco_categoria):
     arco_categoria_lower = arco_categoria.lower()
 
     for keyword, categoria_iccd in categoria_map.items():
-        if keyword in arco_categoria_lower:
+        if re.search(rf'\b{re.escape(keyword)}\b', arco_categoria_lower):
             return categoria_iccd
 
     print(f"fallback categoria: {arco_categoria}")
@@ -382,5 +509,7 @@ def map_categoria(arco_categoria):
 
 
 if __name__ == "__main__":
-    results = run_sparql_query(endpoint_url, sparql_query)
-    create_docx(results, city_name)
+    with Spinner("Esecuzione query SPARQL..."):
+        results = run_sparql_query(ENDPOINT, sparql_query)
+    
+    create_docx(results)
