@@ -35,22 +35,29 @@ CITY_CAPITALIZED = " ".join(word.capitalize() for word in CITY_NAME.split())
 city_slug = CITY_CAPITALIZED.lower().replace(" ", "_")
 OUTPUT_JSON = f"{city_slug}_osm_poi.json"
 
-# valori di default (MAX_POI = 10, FILTER_ONLY_WITH_LINKS = False)
+# valori di default:
+# MAX_POI = 0 (illimitato)
+# FILTER_ONLY_WITH_LINKS = False (non limitato ai soli poi con web url
 
 # MAX_POI (opzionale)
 if len(sys.argv) > 2:
     try:
         MAX_POI = int(sys.argv[2])
     except ValueError:
-        print("MAX_POI non valido, uso il default di 10")
-        MAX_POI = 10
+        print("MAX_POI non valido, uso il default")
+        MAX_POI = 0
 else:
-    MAX_POI = 10
+    MAX_POI = 0
 
 # FILTER_ONLY_WITH_LINKS (opzionale)
 if len(sys.argv) > 3:
-    FILTER_ONLY_WITH_LINKS = sys.argv[3].lower() in ("1", "true", "yes")
-
+    try:
+      FILTER_ONLY_WITH_LINKS = sys.argv[3].lower() in ("1", "true", "yes")
+    except ValueError:
+        print("FILTER_ONLY_WITH_LINKS non valido, uso il default")
+        FILTER_ONLY_WITH_LINKS = False
+else:
+    FILTER_ONLY_WITH_LINKS = False
 
 
 # ---------- MAPPATURE ----------
@@ -82,6 +89,9 @@ OSM_TO_TOURISM = {
 }
 
 OSM_TO_PERSISTENT = {
+    ("tourism", "artwork"): "Opera d’arte",
+    ("tourism", "sculpture"): "Statua / Monumento",
+    ("tourism", "installation"): "Opera contemporanea",
     ("amenity", "restaurant"): "Locale enogastronomico",
     ("amenity", "cafe"): "Locale enogastronomico",
     ("amenity", "bar"): "Locale enogastronomico",

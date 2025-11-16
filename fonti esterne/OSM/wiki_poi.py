@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import sys
 import json
 import requests
@@ -214,15 +215,15 @@ def extract_section(page, names):
     return ""
 
 
-import re
-
 # Lista parole chiave dei POI generici da saltare
 generic_keywords = [
-    "parcheggio", "bancomat", "farmacia",
-    "bar", "ristorante", "poste italiane", "belvedere",
+    "parcheggio", "bancomat", "farmacia", "caffè",
+    "bar", "pub", "ristorante", "belvedere",
     "piazza", "fontana", "parco", "stazione", "hotel",
-    "villa", "teatro", "scuola", "ospedale",
-    # combinazioni fermate
+    "villa", "teatro", "scuola", "ospedale"
+]
+
+transport_keywords = [
     "fermata treno",
     "fermata autobus",
     "fermata tram",
@@ -230,16 +231,31 @@ generic_keywords = [
 ]
 
 def is_generic_poi(poi):
-    nome = poi["nome_poi"].lower()
+    nome = poi.get("nome_poi", "").lower()
     address = poi.get("address", "").lower()
-    
+    categoria = poi.get("categoria_persistente", "").lower()
+
+    if nome == "poi senza nome":
+        return True
+
+    # --- 1. BANCHE, BANCOMAT, Toilets, Farmacie, Uffici postali ---
+    if categoria in ("amenity:bank", "amenity:atm", "amenity:toilets", "amenity:pharmacy", "amenity:post_office"):
+        return True
+
+    # --- 2. Fermate / trasporto generico ---
+    for keyword in transport_keywords:
+        if nome.startswith(keyword):
+            return True
+
+    # --- 3. Parole chiave generiche di base ---
     for keyword in generic_keywords:
         if nome.startswith(keyword):
             remainder = nome[len(keyword):].strip()
-            # se il resto è vuoto o coincide con l'indirizzo, consideralo generico
             if not remainder or remainder in address:
                 return True
+
     return False
+
 
 def get_wikipedia_info(poi, coord_tolerance=0.01):
     """

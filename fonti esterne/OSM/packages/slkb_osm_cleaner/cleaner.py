@@ -253,8 +253,9 @@ def apply_name_cleaning(poi):
             else:
                 name = name_no_city.strip()
 
+
     # ----------------------------
-    # NUOVO BLOCCO — CATEGORIE GENERICHE
+    # CATEGORIE GENERICHE + ARTE E SCULTURA
     # ----------------------------
     CATEGORY_TO_NAME = {
         "post_office": "Ufficio Postale",
@@ -272,21 +273,100 @@ def apply_name_cleaning(poi):
         "pub": "Pub",
         "parcheggio": "Parcheggio",
         "teatro": "Teatro",
-        "parco": "Parco"
+        "parco": "Parco",
+        # categorie artistiche
+        "Opera d’arte": "Opera d’arte",
+        "Statua / Monumento": "Statua / Monumento",
+        "Opera contemporanea": "Opera contemporanea"
     }
 
-    cat_base = (categoria.split(":")[-1] if ":" in categoria else categoria).lower()
+    # normalizza la categoria per confronti robusti (minuscole + apostrofo uniforme)
+    cat_base = (categoria.split(":")[-1] if ":" in categoria else categoria).strip()
+    cat_base_norm = cat_base.lower().replace("’", "'").replace("`", "'").replace("‘", "'")
+
     original_words = original_name.split()
 
-    if cat_base in CATEGORY_TO_NAME:
-        base_name = CATEGORY_TO_NAME[cat_base]
+    print(f"name: {name}")
+    print(f"original_name: {original_name}")
+    print(f"cat_base: {cat_base}")
+    print(f"cat_base_norm: {cat_base_norm}")
 
-        # aggiungi via solo se il nome originale era puramente generico (una sola parola)
+    # ----------------------------
+    # ARTE / SCULTURA - costruzione nome senza prefisso generico
+    # ----------------------------
+    if cat_base_norm in {"opera d'arte", "statua / monumento", "opera contemporanea"}:
+        # mappa artwork_type -> italiano
+        ARTWORK_TYPE_IT = {
+            "sculpture": "Statua / Monumento",
+            "bust": "Busto",
+            "installation": "Opera contemporanea",
+            # altri tipi se necessario
+        }
+
+        artwork_type = tag_dict.get("artwork_type", "").replace('"','').strip().lower()
+        inscription = tag_dict.get("inscription", "").replace('"','').strip()
+
+        # rimuove città dall'inscription se presente (case-insensitive)
+        if city and inscription:
+            inscription = re.sub(re.escape(city), "", inscription, flags=re.IGNORECASE).strip()
+
+        # traduce artwork_type se presente nella mappa
+        tipo_it = ARTWORK_TYPE_IT.get(artwork_type, smart_capitalize(artwork_type)) if artwork_type else ""
+
+        # --- PULIZIA INIZIALE INSCRIPTION ---
+        if inscription:
+            # rimuove '/' e '|' multipli e codici Wikidata
+            inscription = re.sub(r"\s*[|/]\s*", " ", inscription)
+            inscription = re.sub(r"Q\d+", "", inscription)
+            inscription = re.sub(r"\s{2,}", " ", inscription).strip()
+
+        # --- PATCH SPECIFICA PER STATUE ---
+        if tipo_it.lower() == "statua / monumento":
+            tipo_it = tipo_it.replace("/", "").strip()  # rimuove '/'
+
+            # se ci sono ancora '/' separatori nell'iscrizione, estrai prime due parole/parti
+            if inscription:
+                parts_inscription = inscription.split()
+                if len(parts_inscription) > 0:
+                    # trova indice ultima parola da tenere (qui "Orlandi")
+                    try:
+                        idx_stop = parts_inscription.index("Orlandi") + 1
+                        inscription = " ".join(parts_inscription[:idx_stop])
+                    except ValueError:
+                        # se non trova "Orlandi", lascia solo le prime 5-6 parole
+                        inscription = " ".join(parts_inscription[:6])
+
+                # trasforma "In memoria ..." → "in memoria ..."
+                if inscription.lower().startswith("in memoria"):
+                    inscription = "in memoria" + inscription[10:]
+
+        # --- PULIZIA FINALE INSCRIPTION ---
+        if inscription and not inscription.lower().startswith("in memoria"):
+            inscription = smart_capitalize(inscription)
+
+        # costruisce nome finale: Tipo a Soggetto (senza prefisso generico)
+        parts = []
+        if tipo_it:
+            parts.append(tipo_it)
+        if inscription:
+            parts.append(inscription)
+
+        # se ci sono parti, compone "Tipo a Soggetto"
+        if parts:
+            name = " ".join(parts)
+        else:
+            # nessun dettaglio: mantieni il nome originale o tipo_it
+            name = tipo_it if tipo_it else name
+
+
+    # altre categorie generiche
+    elif cat_base in CATEGORY_TO_NAME:
+        base_name = CATEGORY_TO_NAME[cat_base]
         if len(original_words) == 1 and via_clean_short:
             name = f"{base_name} {via_clean_short}"
         else:
-            # mantieni eventuale specifica presente
-            name = smart_capitalize(name)
+            name = smart_capitalize(base_name)
+
 
     # ----------------------------
     # GENERIC_WITH_ADDRESS
