@@ -1,0 +1,8 @@
+{
+  "name": "com.project.avatar.facialexpression",
+  "version": "1.0.0",
+  "displayName": "Avatar Facial Expression Presets",
+  "description": "Modulo per gestire preset facciali e applicarli agli avatar",
+  "unity": "6000.3",
+  "dependencies": {}
+}

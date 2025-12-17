@@ -1,0 +1,215 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4c2964c95543643957b36af0022880, type: 3}
+  m_Name: Expressions_Preset
+  m_EditorClassIdentifier: FacialExpressionPresets.Runtime::ExpressionPresets
+  expressions:
+  - name: Neutral
+    blendValues: []
+  - name: Smile
+    blendValues:
+    - arkitName: mouthSmileLeft
+      weight: 0.9
+    - arkitName: mouthSmileRight
+      weight: 0.9
+    - arkitName: cheekSquintLeft
+      weight: 0.4
+    - arkitName: cheekSquintRight
+      weight: 0.4
+    - arkitName: eyeSquintLeft
+      weight: 0.3
+    - arkitName: eyeSquintRight
+      weight: 0.3
+  - name: Sad
+    blendValues:
+    - arkitName: mouthFrownLeft
+      weight: 0.8
+    - arkitName: mouthFrownRight
+      weight: 0.8
+    - arkitName: browDownLeft
+      weight: 0.7
+    - arkitName: browDownRight
+      weight: 0.7
+    - arkitName: jawOpen
+      weight: 0.5
+  - name: Angry
+    blendValues:
+    - arkitName: browDownLeft
+      weight: 0.9
+    - arkitName: browDownRight
+      weight: 0.9
+    - arkitName: noseSneerLeft
+      weight: 0.5
+    - arkitName: noseSneerRight
+      weight: 0.5
+    - arkitName: mouthFrownLeft
+      weight: 0.5
+    - arkitName: mouthFrownRight
+      weight: 0.5
+  - name: Surprised
+    blendValues:
+    - arkitName: jawOpen
+      weight: 1
+    - arkitName: mouthFunnel
+      weight: 0.6
+    - arkitName: eyeWideLeft
+      weight: 0.8
+    - arkitName: eyeWideRight
+      weight: 0.8
+    - arkitName: browInnerUp
+      weight: 0.8
+  - name: Disgusted
+    blendValues:
+    - arkitName: noseSneerLeft
+      weight: 0.9
+    - arkitName: noseSneerRight
+      weight: 0.9
+    - arkitName: mouthFrownLeft
+      weight: 0.6
+    - arkitName: mouthFrownRight
+      weight: 0.6
+    - arkitName: browDownLeft
+      weight: 0.7
+    - arkitName: browDownRight
+      weight: 0.7
+  - name: Cheeky
+    blendValues:
+    - arkitName: cheekPuff
+      weight: 0.6
+    - arkitName: mouthSmileLeft
+      weight: 0.6
+    - arkitName: mouthSmileRight
+      weight: 0.6
+    - arkitName: eyeSquintLeft
+      weight: 0.3
+    - arkitName: eyeSquintRight
+      weight: 0.3
+  - name: Talk_A
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.35
+    - arkitName: mouthFunnel
+      weight: 0.2
+    - arkitName: mouthStretchLeft
+      weight: 0.15
+    - arkitName: mouthStretchRight
+      weight: 0.15
+  - name: Talk_E
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.3
+    - arkitName: mouthSmileLeft
+      weight: 0.3
+    - arkitName: mouthSmileRight
+      weight: 0.3
+    - arkitName: mouthFunnel
+      weight: 0.2
+  - name: Talk_I
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.25
+    - arkitName: mouthSmileLeft
+      weight: 0.45
+    - arkitName: mouthSmileRight
+      weight: 0.45
+    - arkitName: cheekSquintLeft
+      weight: 0.1
+    - arkitName: cheekSquintRight
+      weight: 0.1
+  - name: Talk_O
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.3
+    - arkitName: mouthFunnel
+      weight: 0.5
+    - arkitName: mouthPucker
+      weight: 0.3
+  - name: Talk_U
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.05
+    - arkitName: mouthPucker
+      weight: 0.75
+    - arkitName: mouthFunnel
+      weight: 0.36
+  - name: Talk_S
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.2
+    - arkitName: mouthFunnel
+      weight: 0.25
+    - arkitName: mouthPressLeft
+      weight: 0.2
+    - arkitName: mouthPressRight
+      weight: 0.2
+  - name: Talk_M
+    blendValues:
+    - arkitName: mouthClose
+      weight: 0.25
+    - arkitName: jawOpen
+      weight: 0.05
+  - name: Talk_P
+    blendValues:
+    - arkitName: mouthClose
+      weight: 0.22
+    - arkitName: mouthPressLeft
+      weight: 0.2
+    - arkitName: mouthPressRight
+      weight: 0.2
+    - arkitName: jawOpen
+      weight: 0.05
+    - arkitName: cheekSquintLeft
+      weight: 0.1
+    - arkitName: cheekSquintRight
+      weight: 0.1
+  - name: Talk_F
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.18
+    - arkitName: mouthClose
+      weight: 0.25
+    - arkitName: mouthPressLeft
+      weight: 0.35
+    - arkitName: mouthPressRight
+      weight: 0.35
+    - arkitName: mouthFunnel
+      weight: 0.2
+    - arkitName: mouthPucker
+      weight: 0.15
+  - name: Talk_T
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.22
+    - arkitName: mouthClose
+      weight: 0.18
+    - arkitName: mouthPressLeft
+      weight: 0.25
+    - arkitName: mouthPressRight
+      weight: 0.25
+    - arkitName: cheekSquintLeft
+      weight: 0.05
+    - arkitName: cheekSquintRight
+      weight: 0.05
+  - name: Talk_K
+    blendValues:
+    - arkitName: jawOpen
+      weight: 0.3
+    - arkitName: mouthFunnel
+      weight: 0.35
+    - arkitName: mouthPucker
+      weight: 0.2
+    - arkitName: mouthClose
+      weight: 0.1
+    - arkitName: cheekSquintLeft
+      weight: 0.05
+    - arkitName: cheekSquintRight
+      weight: 0.05
