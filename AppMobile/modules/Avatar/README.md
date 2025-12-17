@@ -263,6 +263,8 @@ Per creare avatar compatibili con questo sistema è necessario che:
 L’architettura **non è vincolata a MetaPerson**:
 qualsiasi avatar che rispetti questi requisiti è supportato.
 
+[Per approfondimenti sulla tematica dei blendshape consultare il file **Blendshapes.md**](Blendshapes.md)
+
 ---
 
 ## 11. Linee guida per il team
