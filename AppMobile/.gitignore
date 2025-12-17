@@ -21,6 +21,8 @@
 *.pdb
 *.opendb
 *.VC.db
+.vsconfig
+.vs/
 
 # OS generated files
 .DS_Store
