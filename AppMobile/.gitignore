@@ -45,8 +45,21 @@ modules/**/Library/
 modules/**/Temp/
 modules/**/Obj/
 
-# Ignora tutte le immagini, e i relativi .meta, in una cartella e in tutte le sue sottocartelle
-AppMobile/modules/Avatar/FacialExpressionPresets/Prefabs/**/*.{png,jpg,jpeg,gif,bmp,tiff,webp}
-AppMobile/modules/Avatar/FacialExpressionPresets/Prefabs/**/*.{png,jpg,jpeg,gif,bmp,tiff,webp}.meta
+# Ignora tutte le immagini in una cartella e in tutte le sue sottocartelle
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.png
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpg
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpeg
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.gif
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.bmp
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.tiff
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.webp
 
+# Ignora anche i meta corrispondenti
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.png.meta
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpg.meta
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpeg.meta
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.gif.meta
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.bmp.meta
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.tiff.meta
+modules/Avatar/FacialExpressionPresets/Prefabs/**/*.webp.meta
 
