@@ -46,8 +46,7 @@ modules/**/Temp/
 modules/**/Obj/
 
 # Ignora tutte le immagini, e i relativi .meta, in una cartella e in tutte le sue sottocartelle
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.{png,jpg,jpeg,gif,bmp,tiff,webp}
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.{png,jpg,jpeg,gif,bmp,tiff,webp}.meta
-
+AppMobile/modules/Avatar/FacialExpressionPresets/Prefabs/**/*.{png,jpg,jpeg,gif,bmp,tiff,webp}
+AppMobile/modules/Avatar/FacialExpressionPresets/Prefabs/**/*.{png,jpg,jpeg,gif,bmp,tiff,webp}.meta
 
 
