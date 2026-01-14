@@ -51,6 +51,9 @@ modules/**/Library/
 modules/**/Temp/
 modules/**/Obj/
 
+# Meta dei file .md
+*.md.meta
+
 # Immagini in qualsiasi Prefabs sotto modules/Avatar
 modules/Avatar/**/Prefabs/**/*.png
 modules/Avatar/**/Prefabs/**/*.jpg
