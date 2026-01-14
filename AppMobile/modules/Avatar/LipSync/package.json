@@ -1,0 +1,10 @@
+{
+  "name": "com.project.avatar.lipsync",
+  "version": "1.0.0",
+  "displayName": "Avatar Lip Sync",
+  "description": "Modulo per gestire il lip sync degli avatar",
+  "unity": "6000.3",
+  "dependencies": { 
+    "com.project.avatar.core": "1.0.0" 
+  }
+}

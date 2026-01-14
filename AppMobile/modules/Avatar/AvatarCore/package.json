@@ -1,0 +1,8 @@
+{
+  "name": "com.project.avatar.core",
+  "version": "1.0.0",
+  "displayName": "Avatar Core",
+  "description": "Interfacce e componenti base condivisi tra i moduli avatar.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

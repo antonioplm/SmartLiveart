@@ -4,5 +4,7 @@
   "displayName": "Avatar Facial Expression Presets",
   "description": "Modulo per gestire preset facciali e applicarli agli avatar",
   "unity": "6000.3",
-  "dependencies": {}
+  "dependencies": { 
+    "com.project.avatar.core": "1.0.0" 
+  }
 }

@@ -24,6 +24,12 @@
 .vsconfig
 .vs/
 
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.DotSettings
+*.DotSettings.user
+
 # OS generated files
 .DS_Store
 Thumbs.db
@@ -45,21 +51,20 @@ modules/**/Library/
 modules/**/Temp/
 modules/**/Obj/
 
-# Ignora tutte le immagini in una cartella e in tutte le sue sottocartelle
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.png
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpg
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpeg
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.gif
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.bmp
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.tiff
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.webp
+# Immagini in qualsiasi Prefabs sotto modules/Avatar
+modules/Avatar/**/Prefabs/**/*.png
+modules/Avatar/**/Prefabs/**/*.jpg
+modules/Avatar/**/Prefabs/**/*.jpeg
+modules/Avatar/**/Prefabs/**/*.gif
+modules/Avatar/**/Prefabs/**/*.bmp
+modules/Avatar/**/Prefabs/**/*.tiff
+modules/Avatar/**/Prefabs/**/*.webp
 
-# Ignora anche i meta corrispondenti
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.png.meta
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpg.meta
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.jpeg.meta
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.gif.meta
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.bmp.meta
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.tiff.meta
-modules/Avatar/FacialExpressionPresets/Prefabs/**/*.webp.meta
-
+# Meta corrispondenti
+modules/Avatar/**/Prefabs/**/*.png.meta
+modules/Avatar/**/Prefabs/**/*.jpg.meta
+modules/Avatar/**/Prefabs/**/*.jpeg.meta
+modules/Avatar/**/Prefabs/**/*.gif.meta
+modules/Avatar/**/Prefabs/**/*.bmp.meta
+modules/Avatar/**/Prefabs/**/*.tiff.meta
+modules/Avatar/**/Prefabs/**/*.webp.meta

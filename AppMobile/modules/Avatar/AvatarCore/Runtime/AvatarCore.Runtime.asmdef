@@ -1,8 +1,6 @@
 {
-  "name": "FacialExpressionPresets.Runtime",
-  "references": [
-    "AvatarCore"
-  ],
+  "name": "AvatarCore",
+  "references": [],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

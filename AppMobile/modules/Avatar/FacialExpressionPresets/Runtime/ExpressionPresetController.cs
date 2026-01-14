@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ExpressionPresetController : MonoBehaviour
+public class ExpressionPresetController : MonoBehaviour, ILipSyncTarget
 {
     [Header("Avatar Settings")]
     public SkinnedMeshRenderer faceMesh;               // mesh principale (es. AvatarHead)
@@ -312,4 +312,22 @@ public class ExpressionPresetController : MonoBehaviour
                 ApplyTo(smr);
     }
 
+    // ---------------------------
+    // ILipSyncTarget IMPLEMENTATION
+    // ---------------------------
+
+    public string CurrentViseme => lastExpression;
+
+    public void SetJaw(float openness)
+    {
+        jawOpenScale = openness;
+    }
+
+    public void SetViseme(string viseme, float duration)
+    {
+        if (lastExpression == viseme)
+            return;
+
+        LerpExpression(lastExpression, viseme, duration);
+    }
 }

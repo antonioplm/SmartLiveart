@@ -1,10 +1,26 @@
 {
   "dependencies": {
+    "com.project.avatar.core": {
+      "version": "file:../../modules/Avatar/AvatarCore",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.project.avatar.facialexpression": {
       "version": "file:../../modules/Avatar/FacialExpressionPresets",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.project.avatar.core": "1.0.0"
+      }
+    },
+    "com.project.avatar.lipsync": {
+      "version": "file:../../modules/Avatar/LipSync",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.project.avatar.core": "1.0.0"
+      }
     },
     "com.unity.collab-proxy": {
       "version": "2.10.2",
