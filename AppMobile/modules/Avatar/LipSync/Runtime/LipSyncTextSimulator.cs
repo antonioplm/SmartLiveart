@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using AvatarCore;
 
 /// <summary>
 /// 💬 Simula o riproduce parlato da testo.
@@ -9,6 +10,12 @@ using System.Threading.Tasks;
 /// 1️⃣ Simulazione fonetica senza audio
 /// 2️⃣ TTS + visemi sincronizzati (OpenAI / ElevenLabs)
 /// </summary>
+
+// Se vuoi, posso prepararti anche:
+// una versione con coarticolazione avanzata (basata su tabelle professionali)
+// una versione sincronizzata con TTS reale (OpenAI / ElevenLabs)
+// un inspector custom per controllare la simulazione in editor
+
 public class LipSyncTextSimulator : MonoBehaviour
 {
     public enum Mode { Simulazione, TTS }
@@ -23,18 +30,15 @@ public class LipSyncTextSimulator : MonoBehaviour
 
     public AudioSource audioSource;
     public float velocitaParlato = 12f;
-    public float moltiplicatoreDurataVocali = 1.3f;
-    public float durataPausa = 0.25f;
+    public float durataPausa = 0.30f;
 
     private Coroutine simulazioneCorrente;
-
-    private ILipSyncTarget target;   // <-- riferimento generico al sistema facciale
+    private ILipSyncTarget target;
 
     public static LipSyncTextSimulator Instance { get; private set; }
 
     private void Awake()
     {
-        // Singleton setup
         if (Instance != null && Instance != this)
         {
             Destroy(this.gameObject);
@@ -46,16 +50,16 @@ public class LipSyncTextSimulator : MonoBehaviour
 
     void Start()
     {
-        // Trova automaticamente un componente che implementa ILipSyncTarget
-        var all = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+        target = TrovaTarget();
 
-        foreach (var mb in all)
+        ILipSyncTarget TrovaTarget()
         {
-            if (mb is ILipSyncTarget t)
-            {
-                target = t;
-                break;
-            }
+            var all = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var mb in all)
+                if (mb is ILipSyncTarget t)
+                    return t;
+
+            return null;
         }
 
         if (target == null)
@@ -63,11 +67,15 @@ public class LipSyncTextSimulator : MonoBehaviour
             Debug.LogError("❌ Nessun ILipSyncTarget trovato nella scena!");
             return;
         }
+        else
+            Debug.Log("Target trovato: " + target);
 
+/*
         if (modalita == Mode.Simulazione)
             SimulaTesto(testo);
         else
             _ = RiproduciTTSESeguiVisemi(testo);
+          */
     }
 
     // -----------------------------
@@ -90,12 +98,11 @@ public class LipSyncTextSimulator : MonoBehaviour
         {
             string viseme = MappaFonemaVisema(fonema);
             float durata = CalcolaDurataFonema(fonema);
-
-            float durataTransizione = IsVocale(fonema) ? 0.08f : 0.04f;
+            float transizione = CalcolaTransizione(fonema);
 
             if (viseme != ultimoViseme)
             {
-                target.SetViseme(viseme, durataTransizione);
+                target.SetViseme(viseme, transizione);
                 ultimoViseme = viseme;
             }
 
@@ -103,13 +110,6 @@ public class LipSyncTextSimulator : MonoBehaviour
         }
 
         target.SetViseme("Neutral", 0.15f);
-    }
-
-    private float CalcolaDurataFonema(string fonema)
-    {
-        if (IsPausa(fonema)) return durataPausa;
-        float baseDur = 1f / velocitaParlato;
-        return IsVocale(fonema) ? baseDur * moltiplicatoreDurataVocali : baseDur;
     }
 
     // -----------------------------
@@ -125,7 +125,6 @@ public class LipSyncTextSimulator : MonoBehaviour
 
         Debug.Log($"🔊 Genero audio TTS con {provider}: {testo}");
 
-        // 1️⃣ Genera audio
         AudioClip clip = await GeneraAudioDaTesto(testo);
         if (clip == null)
         {
@@ -133,18 +132,15 @@ public class LipSyncTextSimulator : MonoBehaviour
             return;
         }
 
-        // 2️⃣ Avvia visemi simulati in parallelo
         StartCoroutine(SimulazioneRoutine(testo));
 
-        // 3️⃣ Riproduci audio
         audioSource.clip = clip;
         audioSource.Play();
     }
 
     private async Task<AudioClip> GeneraAudioDaTesto(string testo)
     {
-        // 🔸 Simulazione asincrona placeholder:
-        await Task.Delay(500); // Simula tempo di rete
+        await Task.Delay(500);
         Debug.Log($"✅ (Mock) Audio TTS generato per '{testo}'");
         return AudioClip.Create("FakeTTS", 44100, 1, 44100, false);
     }
@@ -172,47 +168,51 @@ public class LipSyncTextSimulator : MonoBehaviour
         return fonemi;
     }
 
-    private string MappaFonemaVisema(string fonema)
+    private string MappaFonemaVisema(string f)
     {
-        fonema = fonema.ToLower();
-
-        switch (fonema)
+        return f switch
         {
-            case "a": return "Talk_A";
-            case "e": return "Talk_E";
-            case "i": return "Talk_I";
-            case "o": return "Talk_O";
-            case "u": return "Talk_U";
+            "a" => "Talk_A",
+            "e" => "Talk_E",
+            "i" => "Talk_I",
+            "o" => "Talk_O",
+            "u" => "Talk_U",
 
-            case "m":
-            case "p":
-            case "b": return "Talk_P";
+            "m" or "p" or "b" => "Talk_P",
+            "f" or "v" => "Talk_F",
+            "t" or "d" or "n" or "l" or "r" => "Talk_T",
+            "k" or "g" or "c" or "q" => "Talk_K",
+            "s" or "z" or "x" => "Talk_S",
 
-            case "f":
-            case "v": return "Talk_F";
+            "punto" or "virgola" or "sil" => "Neutral",
+            _ => "Neutral"
+        };
+    }
 
-            case "t":
-            case "d":
-            case "n":
-            case "l":
-            case "r": return "Talk_T";
+    // -----------------------------
+    // ⏱️ DURATE REALISTICHE
+    // -----------------------------
+    private float CalcolaDurataFonema(string f)
+    {
+        float baseDur = 1f / velocitaParlato;
 
-            case "k":
-            case "g":
-            case "c":
-            case "q": return "Talk_K";
+        if (IsPausa(f)) return durataPausa;
+        if (IsVocale(f)) return baseDur * 1.4f;
+        if ("ptk".Contains(f)) return baseDur * 0.6f;
+        if ("sz".Contains(f)) return baseDur * 0.8f;
 
-            case "s":
-            case "z":
-            case "x": return "Talk_S";
+        return baseDur;
+    }
 
-            case "sil":
-            case "virgola":
-            case "punto":
-                return "Neutral";
-
-            default: return "Neutral";
-        }
+    // -----------------------------
+    // 🔄 COARTICOLAZIONE
+    // -----------------------------
+    private float CalcolaTransizione(string f)
+    {
+        if (IsVocale(f)) return 0.10f;
+        if ("ptk".Contains(f)) return 0.04f;
+        if ("sz".Contains(f)) return 0.06f;
+        return 0.08f;
     }
 
     private bool IsVocale(string f) => "aeiou".Contains(f);

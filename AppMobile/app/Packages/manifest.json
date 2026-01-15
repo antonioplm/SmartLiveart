@@ -1,8 +1,15 @@
 {
   "dependencies": {
+    "com.project.ai.client": "file:../../modules/AI/AIClient",
+    "com.project.ai.sttcloud": "file:../../modules/AI/STTCloud",
+    "com.project.ai.ttscloud": "file:../../modules/AI/TTSCloud",
     "com.project.avatar.core": "file:../../modules/Avatar/AvatarCore",
     "com.project.avatar.facialexpression": "file:../../modules/Avatar/FacialExpressionPresets",
     "com.project.avatar.lipsync": "file:../../modules/Avatar/LipSync",
+    "com.project.avatar.audiocapture": "file:../../modules/Avatar/AudioCapture",
+    "com.project.avatar.audioplayback": "file:../../modules/Avatar/AudioPlayback",
+    "com.project.dialog.orchestrator": "file:../../modules/Dialog/DialogOrchestrator",
+    "com.project.ui.dialog": "file:../../modules/UI/DialogUI",
     "com.unity.collab-proxy": "2.10.2",
     "com.unity.feature.development": "1.0.2",
     "com.unity.inputsystem": "1.17.0",

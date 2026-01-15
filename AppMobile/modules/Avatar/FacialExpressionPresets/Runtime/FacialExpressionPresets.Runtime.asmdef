@@ -1,7 +1,9 @@
 {
   "name": "FacialExpressionPresets.Runtime",
+  "rootNamespace": "FacialExpressionPresets",
   "references": [
-    "AvatarCore"
+    "AvatarCore.Runtime",
+    "LipSync.Runtime"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
@@ -9,4 +11,3 @@
   "overrideReferences": false,
   "autoReferenced": true
 }
-

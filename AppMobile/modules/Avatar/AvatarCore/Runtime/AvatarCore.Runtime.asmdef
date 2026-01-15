@@ -1,5 +1,6 @@
 {
-  "name": "AvatarCore",
+  "name": "AvatarCore.Runtime",
+  "rootNamespace": "AvatarCore",
   "references": [],
   "includePlatforms": [],
   "excludePlatforms": [],
@@ -7,4 +8,3 @@
   "overrideReferences": false,
   "autoReferenced": true
 }
-

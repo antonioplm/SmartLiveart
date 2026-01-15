@@ -271,10 +271,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1366250177}
-  - component: {fileID: 1366250176}
-  - component: {fileID: 1366250180}
-  - component: {fileID: 1366250179}
-  - component: {fileID: 1366250178}
+  - component: {fileID: 1366250182}
+  - component: {fileID: 1366250181}
+  - component: {fileID: 1366250183}
+  - component: {fileID: 1366250184}
   m_Layer: 0
   m_Name: LipSyncController
   m_TagString: Untagged
@@ -282,26 +282,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1366250176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366250175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 835992e10a9d40f46aeaaa7a4e5bf452, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FacialExpressionPresets.Runtime::ExpressionPresetController
-  faceMesh: {fileID: 557498225}
-  extraMeshes:
-  - {fileID: 557498224}
-  presets: {fileID: 11400000, guid: 300d1fd448578bb439efd783fea61ca0, type: 2}
-  jawOpenScale: 1
-  globalJawLimit: 0.6
-  lastExpression: Neutral
-  lastExpressionIndex: 0
 --- !u!4 &1366250177
 Transform:
   m_ObjectHideFlags: 0
@@ -317,7 +297,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1366250178
+--- !u!114 &1366250181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366250175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c0a6a0eef90564479b527013c557752, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FacialExpressionPresets.Runtime::FacialExpressionPresets.VisemePresetAdapter
+  presetSource: {fileID: 11400000, guid: 300d1fd448578bb439efd783fea61ca0, type: 2}
+--- !u!114 &1366250182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366250175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2342afb7ca43b8a4483e001e44fe6035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LipSync.Runtime::LipSyncBlendshapeTarget
+  faceMesh: {fileID: 557498225}
+  extraMeshes:
+  - {fileID: 557498224}
+  jawOpenLimit: 0.6
+--- !u!114 &1366250183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366250175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aab55b414b70ef438b4457bd721782d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FacialExpressionPresets.Runtime::LipSyncPresetBootstrap
+--- !u!114 &1366250184
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -332,42 +353,59 @@ MonoBehaviour:
   modalita: 0
   provider: 0
   testo: Ciao, sono Telesio e parlo grazie al tuo codice!
-  audioSource: {fileID: 1366250180}
+  audioSource: {fileID: 0}
   velocitaParlato: 12
-  moltiplicatoreDurataVocali: 1.3
-  durataPausa: 0.25
---- !u!114 &1366250179
+  durataPausa: 0.3
+--- !u!1 &1833361349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1833361352}
+  - component: {fileID: 1833361351}
+  - component: {fileID: 1833361350}
+  m_Layer: 0
+  m_Name: LipSyncDriverFFT
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1833361350
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366250175}
+  m_GameObject: {fileID: 1833361349}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ab38439a8382224b9e6b7ce5cccee19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LipSync.Runtime::LipSyncDriverFFT
-  audioSource: {fileID: 1366250180}
-  useMicrophone: 0
+  audioSource: {fileID: 1833361351}
+  targetComponent: {fileID: 1366250182}
   microphoneDevice: 
   sampleRate: 44100
-  loudnessGain: 2
-  smoothness: 0.3
-  minAmplitude: 0.01
+  loudnessGain: 8
+  smoothness: 0.1
+  minAmplitude: 0.001
   neutralViseme: Neutral
---- !u!82 &1366250180
+--- !u!82 &1833361351
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366250175}
+  m_GameObject: {fileID: 1833361349}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 260e8d1953c76d34aba2b008f80b0930, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -453,6 +491,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!4 &1833361352
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833361349}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1852786535
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,3 +703,4 @@ SceneRoots:
   - {fileID: 1852786537}
   - {fileID: 557498223}
   - {fileID: 1366250177}
+  - {fileID: 1833361352}

@@ -1,68 +1,107 @@
-# Avatar Modules  
-**Categoria dei moduli dedicati agli Avatar 3D**
+# 🧍‍♂️ **Avatar Modules**  
+_Moduli Unity dedicati agli Avatar 3D e all’audio locale_
 
 ---
 
-## 1. Scopo della categoria
+## 🎯 1. Scopo della categoria
 
-La cartella `modules/Avatar/` contiene tutti i moduli relativi alla gestione degli **avatar 3D**, incluse:
+La directory:
+
+```
+modules/Avatar/
+```
+
+contiene tutti i moduli Unity responsabili della gestione degli **avatar 3D** e dell’**audio locale**.  
+Questi moduli implementano la parte “visiva” e “acustica” della pipeline conversazionale, includendo:
 
 - struttura e compatibilità dell’avatar  
 - preset facciali data‑driven  
-- lipsync audio/text‑driven  
-- animazioni, rigging, estensioni future  
+- lipsync audio‑driven e text‑driven  
+- animazioni e rigging  
+- cattura audio locale (STT on‑device)  
+- riproduzione audio locale  
 
-Ogni modulo è un **Unity Package locale**, indipendente e integrabile nell’app finale tramite `manifest.json`.
-
-Questa categoria è progettata per essere **scalabile**: puoi aggiungere nuovi moduli senza modificare la struttura esistente.
+Ogni modulo è un **Unity Package locale**, indipendente e integrabile tramite `manifest.json`.  
+La categoria è progettata per essere **scalabile e estendibile**, così da permettere l’aggiunta di nuovi moduli senza modificare quelli esistenti.
 
 ---
 
-## 2. Architettura generale dei moduli Avatar
+## 🧱 2. Architettura generale dei moduli Avatar
 
-I moduli della categoria Avatar seguono una filosofia modulare:
+I moduli seguono una filosofia modulare e componibile:
 
 ```
 AvatarCore
  ├── FacialExpressionPresets
- └── LipSync
+ ├── LipSync
+ ├── AudioCapture (STT locale)
+ └── AudioPlayback
 ```
 
 ### Principi chiave
 
-- **Indipendenza**: ogni modulo è isolato e testabile da solo  
-- **Contratti chiari**: i moduli comunicano tramite interfacce e dati standardizzati  
-- **Data‑driven**: preset, visemi e configurazioni sono definiti tramite asset  
-- **Avatar‑agnostic**: nessun modulo dipende da un modello 3D specifico  
+- **Indipendenza**  
+  Ogni modulo è isolato, testabile e non dipende da altri moduli Avatar.
+
+- **Contratti chiari**  
+  I moduli comunicano tramite interfacce e strutture dati standardizzate.
+
+- **Data‑driven**  
+  Preset, visemi, configurazioni e mapping sono definiti tramite asset.
+
+- **Avatar‑agnostic**  
+  Nessun modulo è legato a un modello 3D specifico: qualsiasi avatar compatibile può essere integrato.
+
+- **Responsabilità locale**  
+  Tutto ciò che riguarda audio locale, lipsync e microfono vive in questa categoria, non nei moduli AI o Dialog.
 
 ---
 
-## 3. Moduli attualmente presenti
+## 📦 3. Moduli attualmente presenti
 
-Questa sezione elenca i moduli *attualmente* disponibili nella categoria Avatar.  
+Questa sezione elenca i moduli disponibili oggi nella categoria Avatar.  
 Può essere aggiornata liberamente quando ne aggiungerai di nuovi.
 
-### ✔ AvatarCore  
-Modulo base che definisce:
+---
+
+### ✔ **AvatarCore**
+
+Modulo fondamentale che definisce:
 
 - struttura dell’avatar  
-- naming ARKit‑style  
+- naming ARKit‑style dei blendshape  
 - requisiti di compatibilità  
-- documentazione tecnica sui blendshape  
+- documentazione tecnica per rigging e setup  
 
-### ✔ FacialExpressionPresets  
+È il punto di riferimento per tutti gli altri moduli Avatar.
+
+---
+
+### ✔ **FacialExpressionPresets**
+
 Sistema data‑driven per:
 
 - definire preset facciali  
 - applicare blendshape tramite controller  
-- creare preset tramite editor tools  
+- creare preset tramite editor tools dedicati  
 
-### ✔ LipSync  
+Permette di gestire espressioni facciali in modo modulare e riutilizzabile.
+
+---
+
+### ✔ **LipSync**
+
 Sistema modulare per:
 
 - lipsync audio‑driven (FFT)  
-- lipsync text‑driven  
-- generazione e applicazione dei visemi  
+- lipsync text‑driven (visemi)  
+- generazione, smoothing e applicazione dei visemi  
+
+Supporta pipeline future come:
+
+- lipsync basato su TTS con visemi integrati  
+- lipsync predittivo  
+- lipsync streaming  
 
 ---
 
@@ -128,6 +167,8 @@ modules/README.md
 
 ## 7. Note per il team
 
+- I moduli Avatar **non devono contenere logica di orchestrazione del dialogo** (sta in `modules/Dialog`)  
+- I moduli Avatar **non devono contenere logica AI o chiamate al backend** (sta in `modules/AI`)  
 - I moduli Avatar devono rimanere **indipendenti** tra loro  
 - AvatarCore non deve dipendere da altri moduli  
 - FacialExpressionPresets e LipSync devono dipendere solo da AvatarCore  

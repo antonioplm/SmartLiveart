@@ -1,0 +1,8 @@
+{
+  "name": "com.project.ai.sttcloud",
+  "version": "1.0.0",
+  "displayName": "STT Cloud",
+  "description": "Modulo per il riconoscimento vocale cloud, gestione dello streaming STT e fallback rispetto allo STT locale.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

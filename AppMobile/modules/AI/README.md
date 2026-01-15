@@ -1,53 +1,138 @@
-# AI Modules  
-**Categoria dei moduli dedicati all’Intelligenza Artificiale**
+## AI Modules  
+**Categoria dei moduli Unity dedicati alla comunicazione con il backend AI**
 
 ---
 
 ## 1. Scopo della categoria
 
-La cartella `modules/AI/` contiene tutti i moduli relativi ai sistemi di **Intelligenza Artificiale** dell’app, inclusi:
+La cartella `modules/AI/` contiene esclusivamente i moduli Unity che gestiscono la **comunicazione tra l’app mobile e il backend AI**.
 
-- gestione dei dialoghi  
-- LLM client (locale o remoto)  
-- pipeline RAG (Retrieval-Augmented Generation)  
-- TTS (Text‑to‑Speech)  
-- STT (Speech‑to‑Text)  
-- orchestrazione delle risposte  
-- sistemi di memoria e contesto  
-- estensioni future (emotion analysis, intent detection, ecc.)
+Questi moduli includono:
 
-Ogni modulo è un **Unity Package locale**, indipendente e integrabile nell’app finale tramite `manifest.json`.
+- client per chiamate API verso il backend  
+- gestione dei contratti JSON  
+- gestione delle sessioni e dei turni lato app  
+- STT cloud (fallback)  
+- TTS cloud (streaming)  
+- parsing delle risposte AI  
+- gestione degli errori di rete  
 
-Questa categoria è progettata per essere **scalabile**: puoi aggiungere nuovi moduli AI senza modificare la struttura esistente.
+---
+
+### ❗ Importante  
+Questa categoria **non contiene**:
+
+- logica di avatar, audio locale, lipsync, UI, AR  
+- orchestrazione del dialogo  
+- modelli AI, RAG, agenti o pipeline server‑side (che vivono in repository backend separati)
+
+Di seguito l’elenco dettagliato di ciò che *non* appartiene a `modules/AI/` e dove deve essere collocato.
+
+---
+
+## 1. **STT locale (on‑device)**
+Logica legata al microfono, all’audio locale e all’avatar.
+
+👉 **Sta in:**  
+`modules/Avatar/`  
+(es. `STTLocal`, `MicrophoneInput`, `AudioCapture`)
+
+---
+
+## 2. **Lipsync, analisi audio, animazioni facciali**
+Componenti di presentazione e animazione dell’avatar.
+
+👉 **Sta in:**  
+`modules/Avatar/`  
+(es. `LipsyncDriver`, `VisemeBlender`, `AvatarController`)
+
+---
+
+## 3. **Audio playback locale**  
+Gestione di AudioSource, buffering e sincronizzazione.
+
+👉 **Sta in:**  
+`modules/Avatar/`
+
+---
+
+## 4. **Orchestrazione della pipeline conversazionale**  
+La logica che collega STT → AI → TTS → Lipsync → Avatar.
+
+👉 **Sta in:**  
+`modules/Dialog/`  
+(es. `DialogOrchestrator`, `ConversationState`, `PipelineController`)
+
+---
+
+## 5. **UI, pulsanti, indicatori di ascolto, waveform**  
+Elementi di interfaccia utente.
+
+👉 **Sta in:**  
+`modules/UI/`
+
+---
+
+## 6. **Logica AR, tracking, ancoraggi**  
+Funzionalità relative alla scena AR.
+
+👉 **Sta in:**  
+`modules/AR/`
+
+---
+
+## 7. **Modelli AI, RAG, agenti, orchestrazione server‑side**  
+Questi componenti non appartengono all’app Unity.  
+Vivono nel backend e non devono essere rappresentati come moduli Unity.
+
+👉 **Sta in:**  
+repository backend dedicati, ad esempio:  
+- `backend-ai/`  
+- `backend-rag/`  
+- `backend-tts/`  
+- `backend-stt/`  
+- `backend-orchestrator/`
+
+---
+
+## 8. **Gestione della memoria conversazionale lato server**  
+Parte del backend AI.
+
+👉 **Sta in:**  
+repository backend (es. `backend-ai-memory/`)
+
+---
+
+## 9. **Intent detection, sentiment analysis, agenti autonomi**  
+Se implementati lato server, non devono apparire nei moduli Unity.
+
+👉 **Sta in:**  
+repository backend (es. `backend-ai-intent/`)
 
 ---
 
 ## 2. Architettura generale dei moduli AI
 
-I moduli AI seguono una filosofia modulare:
+I moduli AI Unity seguono una filosofia di isolamento:
 
-- ogni componente AI è isolato in un package  
-- nessun modulo AI deve dipendere da moduli Avatar, AR o UI  
-- i moduli AI possono dipendere da servizi esterni (API, backend)  
-- i moduli AI devono essere testabili in isolamento  
+- ogni modulo è un Unity Package indipendente  
+- nessun modulo AI dipende da Avatar, AR o UI  
+- i moduli AI non contengono logica di presentazione  
+- i moduli AI non contengono logica di orchestrazione del dialogo  
+- i moduli AI sono semplici **client** che parlano con il backend  
 
 Esempio concettuale:
 
 ```
-LLMClient
-RAGSystem
-DialogueManager
-TTS
-STT
-AIOrchestrator
+AIBackendClient
+TTSClient
+STTCloudFallback
+JsonContracts
 ```
 
 ---
 
 ## 3. Moduli attualmente presenti
-
-Questa sezione elenca i moduli *attualmente* disponibili nella categoria AI.  
-Può essere aggiornata liberamente quando ne aggiungerai di nuovi.
 
 > Nessun modulo presente al momento.
 
@@ -68,13 +153,6 @@ modules/AI/<NomeModulo>/
  └── README.md
 ```
 
-Questa struttura garantisce:
-
-- chiarezza  
-- isolamento  
-- compatibilità con Unity Package Manager  
-- facilità di testing  
-
 ---
 
 ## 5. Integrazione dei moduli AI nell’app finale
@@ -88,10 +166,8 @@ app/Packages/manifest.json
 Esempio:
 
 ```json
-"com.project.ai.dialogue": "file:../../modules/AI/DialogueManager"
+"com.project.ai.backend": "file:../../modules/AI/AIBackendClient"
 ```
-
-Unity importerà automaticamente il modulo tramite Package Manager.
 
 ---
 
@@ -105,36 +181,41 @@ Per creare un nuovo modulo nella categoria AI:
 4. Documenta il modulo con un README dedicato
 5. Aggiungilo al `manifest.json` dell’app finale
 
-Per dettagli completi, consulta:
-
-```
-modules/README.md
-```
-
 ---
 
 ## 7. Note per il team
 
-- I moduli AI devono rimanere **indipendenti** dagli altri domini  
-- Evitare dipendenze da moduli Avatar, AR o UI  
-- Documentare sempre API, componenti e requisiti  
-- Evitare logica specifica dell’app finale dentro i moduli  
-- Se un modulo usa servizi esterni, isolare le API in interfacce  
+- I moduli AI devono rimanere **indipendenti** dagli altri domini Unity  
+- Non devono contenere logica di dialogo o orchestrazione  
+- Non devono contenere logica di avatar o audio  
+- Devono essere semplici client API  
+- Devono essere testabili in isolamento  
+- Devono mantenere contratti JSON chiari e versionati  
 
 ---
 
 ## 8. Obiettivi futuri (non vincolanti)
 
-La categoria AI è progettata per supportare in futuro:
+La categoria AI potrà includere in futuro:
 
-- sentiment analysis  
-- intent classification  
-- memory graph  
-- agenti autonomi  
-- orchestrazione multi‑modello  
-- generazione di animazioni basate su AI  
-- personalizzazione del comportamento degli NPC  
+- client per nuovi servizi backend  
+- client per modelli TTS/STT alternativi  
+- client per servizi di analytics o intent detection lato server  
 
-Queste estensioni non richiedono modifiche strutturali alla categoria.
+Tutto ciò rimane **client-side**, non AI lato backend.
+
+---
+
+# 🎯 In sintesi
+
+Il README aggiornato chiarisce che:
+
+- `modules/AI` contiene **solo moduli Unity**  
+- non contiene logica AI vera e propria  
+- non contiene orchestrazione del dialogo  
+- non contiene modelli o pipeline server-side  
+- è un insieme di **client API** che parlano con il backend  
+
+Esattamente ciò che serve per mantenere la tua architettura pulita e scalabile.
 
 ---

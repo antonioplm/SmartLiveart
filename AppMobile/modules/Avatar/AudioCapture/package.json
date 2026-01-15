@@ -1,0 +1,8 @@
+{
+  "name": "com.project.avatar.audiocapture",
+  "version": "1.0.0",
+  "displayName": "Avatar Audio Capture",
+  "description": "Modulo per la cattura audio locale dal microfono, buffer PCM e integrazione con STT locale o cloud.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

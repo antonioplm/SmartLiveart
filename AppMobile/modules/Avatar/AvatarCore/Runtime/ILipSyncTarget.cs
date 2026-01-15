@@ -1,8 +1,10 @@
-using UnityEngine;
-
-public interface ILipSyncTarget
+namespace AvatarCore
 {
-    string CurrentViseme { get; }
-    void SetViseme(string viseme, float duration);
-    void SetJaw(float openness);
+    public interface ILipSyncTarget
+    {
+        string CurrentViseme { get; }
+        void SetViseme(string viseme, float duration);
+        void SetJaw(float openness);
+    }
 }
+

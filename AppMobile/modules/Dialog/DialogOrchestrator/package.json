@@ -1,0 +1,8 @@
+{
+  "name": "com.project.dialog.orchestrator",
+  "version": "1.0.0",
+  "displayName": "Dialog Orchestrator",
+  "description": "Modulo responsabile dell'orchestrazione della pipeline conversazionale: STT → AI → TTS → Lipsync → Avatar.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "com.project.ai.client",
+  "version": "1.0.0",
+  "displayName": "AI Client",
+  "description": "Modulo responsabile della comunicazione con il backend AI, gestione dello streaming JSON, sessioni e parsing.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

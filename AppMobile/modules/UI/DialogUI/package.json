@@ -1,0 +1,8 @@
+{
+  "name": "com.project.ui.dialog",
+  "version": "1.0.0",
+  "displayName": "Dialog UI",
+  "description": "Modulo UI per la pipeline conversazionale: pulsante microfono, indicatori di stato, trascrizione.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "com.project.avatar.audioplayback",
+  "version": "1.0.0",
+  "displayName": "Avatar Audio Playback",
+  "description": "Modulo per la riproduzione audio locale, gestione streaming TTS, sincronizzazione con lipsync.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

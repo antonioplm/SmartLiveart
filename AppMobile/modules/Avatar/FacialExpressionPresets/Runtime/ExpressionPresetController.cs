@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AvatarCore;
 using UnityEngine;
 
 public class ExpressionPresetController : MonoBehaviour, ILipSyncTarget

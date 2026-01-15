@@ -1,0 +1,8 @@
+{
+  "name": "com.project.ai.ttscloud",
+  "version": "1.0.0",
+  "displayName": "TTS Cloud",
+  "description": "Modulo per la generazione vocale cloud, gestione dello streaming audio e visemi da TTS.",
+  "unity": "6000.3",
+  "dependencies": {}
+}

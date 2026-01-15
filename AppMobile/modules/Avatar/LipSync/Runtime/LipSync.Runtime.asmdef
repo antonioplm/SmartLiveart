@@ -1,7 +1,7 @@
 {
   "name": "LipSync.Runtime",
   "references": [
-    "AvatarCore"
+    "AvatarCore.Runtime"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
